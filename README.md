@@ -9,5 +9,5 @@ Fork of Zabbix 3.2.7 for use with OpenWRT. Includes patches to allow compiling w
 3. `autoconf`
 4. `autoheader`
 5. `automake`
-6. `./configure --host=<architecture> --enable-agent --disable-java --enable-ipv6 --with-mbedtls21=/path/to/toolchain/usr CFLAGS="Os"
+6. `./configure --host=<architecture> --enable-agent --disable-java --enable-ipv6 --with-mbedtls21=/path/to/toolchain/usr CFLAGS="Os"`
 7. `make`
