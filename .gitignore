@@ -1,0 +1,16 @@
+*.o
+*.a
+*.Po
+*.in
+config.*
+configure
+Makefile
+autom4te*
+zabbix_agentd
+zabbix_get
+zabbix_java
+zabbix_proxy
+zabbix_sender
+zabbix_server
+bin/
+build/
