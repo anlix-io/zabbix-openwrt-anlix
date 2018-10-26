@@ -306,21 +306,21 @@ static void  zbx_make_personalization_string(unsigned char pers[64])
 {
  long int  thread_id;
  zbx_timespec_t  ts;
- mbedtls_sha256_context  ctx;
+ mbedtls_sha512_context  ctx;
 
- mbedtls_sha256_init(&ctx);
- mbedtls_sha256_starts(&ctx, 1);   /* use SHA-384 mode */
+ mbedtls_sha512_init(&ctx);
+ mbedtls_sha512_starts(&ctx, 1);   /* use SHA-384 mode */
 
  thread_id = zbx_get_thread_id();
- mbedtls_sha256_update(&ctx, (const unsigned char *)&thread_id, sizeof(thread_id));
+ mbedtls_sha512_update(&ctx, (const unsigned char *)&thread_id, sizeof(thread_id));
 
  zbx_timespec(&ts);
 
  if (0 != ts.ns)
-   mbedtls_sha256_update(&ctx, (const unsigned char *)&ts.ns, sizeof(ts.ns));
+   mbedtls_sha512_update(&ctx, (const unsigned char *)&ts.ns, sizeof(ts.ns));
 
- mbedtls_sha256_finish(&ctx, pers);
- mbedtls_sha256_free(&ctx);
+ mbedtls_sha512_finish(&ctx, pers);
+ mbedtls_sha512_free(&ctx);
 }
 #endif
 
@@ -3597,7 +3597,7 @@ void zbx_tls_init_child(void)
  mbedtls_ctr_drbg_init(ctr_drbg);
 
  if (0 != (res = mbedtls_ctr_drbg_seed(ctr_drbg, mbedtls_entropy_func, entropy, pers, 48)))
-   /* PolarSSL mbedtls_sha256_finish() in SHA-384 mode returns an array "unsigned char output[64]" where result */
+   /* PolarSSL mbedtls_sha512_finish() in SHA-384 mode returns an array "unsigned char output[64]" where result */
    /* resides in the first 48 bytes and the last 16 bytes are not used */
  {
    zbx_guaranteed_memset(pers, 0, sizeof(pers));
