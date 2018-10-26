@@ -85,25 +85,26 @@ define Package/zabbix-anlix-agentd/conffiles
 endef
 
 define Build/Prepare/zabbix-anlix-agentd
-	cd zabbix
+	mkdir -p $(PKG_BUILD_DIR)
+	$(CP) ./zabbix/* $(PKG_BUILD_DIR)/
+endef
+
+define Build/Configure/zabbix-anlix-agentd
 	aclocal
 	autoconf
 	autoheader
 	automake --add-missing
 	./configure --enable-agent --disable-java --enable-ipv6 CFLAGS="Os"
-	cd ..
+endef
+
+define Build/Compile/zabbix-anlix-agentd
+	make
 endef
 
 ifdef CONFIG_PACKAGE_zabbix-anlix-extra-mac80211
 define Build/Prepare/zabbix-anlix-extra-mac80211
 	mkdir -p $(PKG_BUILD_DIR)/zabbix-anlix-extra-mac80211
 	$(CP) ./files/zabbix_helper_mac80211.c $(PKG_BUILD_DIR)/zabbix-anlix-extra-mac80211/
-endef
-
-define Build/Compile/zabbix-anlix-agentd
-	cd zabbix
-	make
-	cd ..
 endef
 
 define Build/Compile/zabbix-anlix-extra-mac80211
@@ -114,6 +115,10 @@ endif
 define Build/Prepare
 	$(call Build/Prepare/zabbix-anlix-agentd)
 	$(call Build/Prepare/zabbix-anlix-extra-mac80211)
+endef
+
+define Build/Configure
+	$(call Build/Configure/zabbix-anlix-agentd)
 endef
 
 define Build/Compile
