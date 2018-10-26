@@ -14,7 +14,8 @@ PKG_RELEASE:=1
 PKG_LICENSE:=GPL
 PKG_LICENSE_FILES:=COPYING
 
-# PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -33,6 +34,7 @@ endef
 define Package/zabbix-anlix-agentd
 	$(call Package/zabbix-anlix/Default)
 	TITLE+= agentd
+	DEPENDS = +libmbedtls
 endef
 
 define Package/zabbix-anlix-extra-mac80211
@@ -71,6 +73,44 @@ As it uses libiwinfo, it works with all wifi devices supported by openwrt.
 See http://wiki.openwrt.org/doc/howto/zabbix for ready to use zabbix templates.
 endef
 
+CONFIGURE_ARGS += \
+	--enable-agent \
+	--disable-java \
+	--enable-ipv6 \
+	--with-mbedtls21
+
+CONFIGURE_VARS += \
+	CFLAGS="-Os"
+
+MAKE_FLAGS += ARCH="linux"
+
+define Package/zabbix-anlix/install/sbin
+	$(INSTALL_DIR) \
+		$(1)/usr/sbin
+
+	$(INSTALL_BIN) \
+		$(PKG_INSTALL_DIR)/usr/sbin/zabbix_$(2) \
+		$(1)/usr/sbin/
+endef
+
+define Package/zabbix-anlix/install/etc
+	$(INSTALL_DIR) \
+		$(1)/etc
+
+	$(INSTALL_CONF) \
+		$(PKG_INSTALL_DIR)/etc/zabbix_$(2).conf \
+		$(1)/etc/
+endef
+
+define Package/zabbix-anlix/install/init.d
+	$(INSTALL_DIR) \
+		$(1)/etc/init.d
+
+	$(INSTALL_BIN) \
+		./files/zabbix_$(2).init \
+		$(1)/etc/init.d/zabbix_$(2)
+endef
+
 define Package/zabbix-anlix/install/zabbix.conf.d
 	$(INSTALL_DIR) \
 		$(1)/etc/zabbix_agentd.conf.d
@@ -89,18 +129,6 @@ define Build/Prepare/zabbix-anlix-agentd
 	$(CP) ./zabbix/* $(PKG_BUILD_DIR)/
 endef
 
-define Build/Configure/zabbix-anlix-agentd
-	aclocal
-	autoconf
-	autoheader
-	automake --add-missing
-	./configure --enable-agent --disable-java --enable-ipv6 CFLAGS="Os"
-endef
-
-define Build/Compile/zabbix-anlix-agentd
-	make
-endef
-
 ifdef CONFIG_PACKAGE_zabbix-anlix-extra-mac80211
 define Build/Prepare/zabbix-anlix-extra-mac80211
 	mkdir -p $(PKG_BUILD_DIR)/zabbix-anlix-extra-mac80211
@@ -113,27 +141,21 @@ endef
 endif
 
 define Build/Prepare
+	$(call Build/Prepare/Default)
 	$(call Build/Prepare/zabbix-anlix-agentd)
 	$(call Build/Prepare/zabbix-anlix-extra-mac80211)
 endef
 
-define Build/Configure
-	$(call Build/Configure/zabbix-anlix-agentd)
-endef
-
 define Build/Compile
-	$(call Build/Compile/zabbix-anlix-agentd)
+	$(call Build/Compile/Default)
 	$(call Build/Compile/zabbix-anlix-extra-mac80211)
 endef
 
-define Package/zabbix-anlix-agentd/install
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DIR) $(1)/etc/init.d
+define Package/zabbix-agentd/install
 	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
-	$(INSTALL_BIN) ./zabbix/src/zabbix_agent/zabbix_agentd $(1)/usr/sbin/
-	$(INSTALL_BIN) ./files/zabbix_agentd.init $(1)/etc/init.d/zabbix_agentd
-	$(INSTALL_CONF) ./zabbix/conf/zabbix_agentd.conf $(1)/etc/
+	$(call Package/zabbix-anlix/install/sbin,$(1),agentd)
+	$(call Package/zabbix-anlix/install/etc,$(1),agentd)
+	$(call Package/zabbix-anlix/install/init.d,$(1),agentd)
 endef
 
 define Package/zabbix-anlix-extra-mac80211/install
