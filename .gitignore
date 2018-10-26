@@ -5,6 +5,7 @@
 config.*
 configure
 Makefile
+!/Makefile
 autom4te*
 zabbix_agentd
 zabbix_get
