@@ -151,7 +151,7 @@ define Build/Compile
 	$(call Build/Compile/zabbix-anlix-extra-mac80211)
 endef
 
-define Package/zabbix-agentd/install
+define Package/zabbix-anlix-agentd/install
 	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
 	$(call Package/zabbix-anlix/install/sbin,$(1),agentd)
 	$(call Package/zabbix-anlix/install/etc,$(1),agentd)
