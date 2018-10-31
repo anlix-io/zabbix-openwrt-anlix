@@ -93,15 +93,6 @@ define Package/zabbix-anlix/install/sbin
 		$(1)/usr/sbin/
 endef
 
-define Package/zabbix-anlix/install/etc
-	$(INSTALL_DIR) \
-		$(1)/etc
-
-	$(INSTALL_CONF) \
-		$(PKG_INSTALL_DIR)/etc/zabbix_$(2).conf \
-		$(1)/etc/
-endef
-
 define Package/zabbix-anlix/install/init.d
 	$(INSTALL_DIR) \
 		$(1)/etc/init.d
@@ -154,7 +145,6 @@ endef
 define Package/zabbix-anlix-agentd/install
 	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
 	$(call Package/zabbix-anlix/install/sbin,$(1),agentd)
-	$(call Package/zabbix-anlix/install/etc,$(1),agentd)
 	$(call Package/zabbix-anlix/install/init.d,$(1),agentd)
 endef
 
