@@ -77,7 +77,7 @@ CONFIGURE_ARGS += \
 	--enable-agent \
 	--disable-java \
 	--enable-ipv6 \
-	--with-mbedtls21
+	--with-mbedtls21="$(STAGING_DIR)/usr"
 
 CONFIGURE_VARS += \
 	CFLAGS="-Os"
